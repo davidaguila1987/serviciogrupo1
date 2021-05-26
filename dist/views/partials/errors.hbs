@@ -1,0 +1,9 @@
+<div class="col-8">
+    {{#if error}}
+    {{#each error}}
+    <div class="alert alert-warning" role="alert">
+        {{msg}}
+    </div>
+    {{/each}}
+    {{/if}}
+</div>
