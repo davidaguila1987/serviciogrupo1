@@ -17,11 +17,17 @@ class UserModel {
     config() {
         return __awaiter(this, void 0, void 0, function* () {
             this.db = yield promise_1.createPool({
-                host: 'localhost',
+                host: 'us-cdbr-east-03.cleardb.com',
+                port: 3306,
+                user: 'b7146e3523096a',
+                password: 'e6432e3b',
+                database: 'heroku_110e4ea57743945',
+                connectionLimit: 10
+                /* host: 'localhost',
                 user: 'root',
                 password: '',
                 database: 'estacionamiento',
-                connectionLimit: 10
+                connectionLimit: 10 */
             });
         });
     }
