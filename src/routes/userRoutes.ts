@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import userController from "../controller/userController";
 import { validationSingUp } from '../middleware/validationSignUp';
 import { registerSchema } from '../schema/register-schema';
+import { TokenValidation } from "../lib/verifyToken";
 
 class UserRoutes {
     public router: Router = Router();
@@ -22,16 +23,16 @@ class UserRoutes {
         this.router.post('/signin', userController.login);
         //registro
         this.router.get('/signup', userController.signup);
-        this.router.post('/signup',registerSchema, validationSingUp, userController.addUser);
+        this.router.post('/signup', registerSchema, validationSingUp, userController.addUser);
         //Home del usuario
         /*  this.router.get('/home', (req: Request, res: Response) => {
              res.send('Bienvenido!!!')
          }); */
         this.router.get('/home', userController.home);
-      //  this.router.get('/errorLogin', userController.errorLogin);
+        //  this.router.get('/errorLogin', userController.errorLogin);
 
         //CRUD	
-        this.router.get('/list', userController.list);
+        this.router.get('/list',TokenValidation,userController.list);
         this.router.get('/find/:id', userController.find);
         this.router.post('/add', userController.addUser);
         this.router.put('/update/:id', userController.update);
@@ -47,8 +48,8 @@ class UserRoutes {
         this.router.get('/auxiliar', userController.auxiliar);
         this.router.post('/procesar', userController.procesar);
 
-        this.router.get('/salir',userController.endSession);
-        this.router.get('/error',userController.showError);
+        this.router.get('/salir', userController.endSession);
+        this.router.get('/error', userController.showError);
 
     }
 }

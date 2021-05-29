@@ -7,6 +7,7 @@ const express_1 = require("express");
 const userController_1 = __importDefault(require("../controller/userController"));
 const validationSignUp_1 = require("../middleware/validationSignUp");
 const register_schema_1 = require("../schema/register-schema");
+const verifyToken_1 = require("../lib/verifyToken");
 class UserRoutes {
     constructor() {
         this.router = express_1.Router();
@@ -34,7 +35,7 @@ class UserRoutes {
         this.router.get('/home', userController_1.default.home);
         //  this.router.get('/errorLogin', userController.errorLogin);
         //CRUD	
-        this.router.get('/list', userController_1.default.list);
+        this.router.get('/list', verifyToken_1.TokenValidation, userController_1.default.list);
         this.router.get('/find/:id', userController_1.default.find);
         this.router.post('/add', userController_1.default.addUser);
         this.router.put('/update/:id', userController_1.default.update);

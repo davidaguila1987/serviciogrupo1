@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const userModel_1 = __importDefault(require("../models/userModel"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class UserController {
     signin(req, res) {
         console.log(req.body);
@@ -28,20 +29,26 @@ class UserController {
             console.log(result);
             // const error = "Usuario o contraseña no valido";
             if (!result) {
-                res.send({ "Usuario no registrado Recibido": req.body });
+                return res.status(404).json({ message: "Usuario no registrado" });
+                //res.send({ "Usuario no registrado Recibido": req.body });
                 //res.redirect("errorLogin");
                 //res.render("partials/error");
-                // res.render("partials/signinForm", { error });
+                //res.render("partials/signinForm", { error });
             }
-            if (result.nombre == usuario && result.password == password) {
-                req.session.user = result;
-                req.session.auth = true;
-                res.redirect("./home");
-                return;
+            else {
+                if (result.nombre == usuario && result.password == password) {
+                    req.session.user = result;
+                    req.session.auth = true;
+                    //  res.redirect("./home"); 
+                    const token = jsonwebtoken_1.default.sign({ _id: result.id }, "secretKey");
+                    res.status(200).json({ message: "Bienvenido " + result.nombre, token: token });
+                    return;
+                }
             }
+            res.status(403).json({ message: "Usuario y/o contraseña incorrectos" });
             //res.send({ "Usuario y/o contraseña incorrectos": req.body });
-            req.flash('error_session', 'Usuario y/o Password Incorrectos');
-            res.redirect("./error");
+            //req.flash('error_session', 'Usuario y/o Password Incorrectos');
+            //res.redirect("./error");
         });
     }
     showError(req, res) {
@@ -72,6 +79,7 @@ class UserController {
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log(req.body);
+            console.log(req.header("Authotization")); //Observamos el valor del token
             const usuarios = yield userModel_1.default.listar();
             console.log(usuarios);
             return res.json(usuarios);
@@ -93,13 +101,16 @@ class UserController {
             const usuario = req.body;
             delete usuario.repassword;
             console.log(req.body);
+            //return;
             //res.send('Usuario agregado!!!');
             const busqueda = yield userModel_1.default.buscarNombre(usuario.nombre);
             if (!busqueda) {
                 const result = yield userModel_1.default.crear(usuario);
-                return res.json({ message: 'User saved!!' });
+                return res.status(200).json({ message: 'User saved!!' });
             }
-            return res.json({ message: 'User exists!!' });
+            else {
+                return res.status(403).json({ message: 'User exists!!' });
+            }
         });
     }
     update(req, res) {

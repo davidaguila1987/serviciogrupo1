@@ -17,7 +17,7 @@ class UserModel {
 			/* host: 'localhost',
 			user: 'root',
 			password: '',
-			database: 'estacionamiento',
+			database: 'pedidost1',
 			connectionLimit: 10 */
 		});
 	}

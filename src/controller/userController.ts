@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import userModel from '../models/userModel';
 import flash from "connect-flash";
+import jwt from "jsonwebtoken";
 
 class UserController {
 
@@ -18,20 +19,26 @@ class UserController {
         console.log(result);
         // const error = "Usuario o contraseña no valido";
         if (!result) {
-            res.send({ "Usuario no registrado Recibido": req.body });
+            return res.status(404).json({ message: "Usuario no registrado" });
+            //res.send({ "Usuario no registrado Recibido": req.body });
             //res.redirect("errorLogin");
             //res.render("partials/error");
-            // res.render("partials/signinForm", { error });
+            //res.render("partials/signinForm", { error });
         }
-        if (result.nombre == usuario && result.password == password) {
-            req.session.user = result;
-            req.session.auth = true;
-            res.redirect("./home");
-            return;
+        else {
+            if (result.nombre == usuario && result.password == password) {
+                req.session.user = result;
+                req.session.auth = true;
+                //  res.redirect("./home"); 
+                const token: string = jwt.sign({ _id: result.id }, "secretKey");
+                res.status(200).json({ message: "Bienvenido " + result.nombre, token: token });
+                return;
+            }
         }
+        res.status(403).json({ message: "Usuario y/o contraseña incorrectos" });
         //res.send({ "Usuario y/o contraseña incorrectos": req.body });
-        req.flash('error_session', 'Usuario y/o Password Incorrectos');
-        res.redirect("./error");
+        //req.flash('error_session', 'Usuario y/o Password Incorrectos');
+        //res.redirect("./error");
     }
 
     public showError(req: Request, res: Response) {
@@ -65,6 +72,7 @@ class UserController {
     //CRUD
     public async list(req: Request, res: Response) {
         console.log(req.body);
+        console.log(req.header("Authotization"));//Observamos el valor del token
         const usuarios = await userModel.listar();
         console.log(usuarios);
         return res.json(usuarios);
@@ -84,13 +92,16 @@ class UserController {
         const usuario = req.body;
         delete usuario.repassword;
         console.log(req.body);
+        //return;
         //res.send('Usuario agregado!!!');
         const busqueda = await userModel.buscarNombre(usuario.nombre);
         if (!busqueda) {
             const result = await userModel.crear(usuario);
-            return res.json({ message: 'User saved!!' });
+            return res.status(200).json({ message: 'User saved!!' });
+        } else {
+            return res.status(403).json({ message: 'User exists!!' });
         }
-        return res.json({ message: 'User exists!!' });
+
     }
 
     public async update(req: Request, res: Response) {
@@ -140,19 +151,19 @@ class UserController {
         let usuario = req.body.usuario;
         var usuarios: any = [];
         console.log(usuario);
-        if (usuario!==undefined) {
+        if (usuario !== undefined) {
             for (let elemento of usuario) {
                 const encontrado = await userModel.buscarId(elemento);
                 if (encontrado) {
                     usuarios.push(encontrado);
-                  //  console.log(encontrado);
+                    //  console.log(encontrado);
                 }
             }
         }
-    
+
         console.log(usuarios);
-        res.render("partials/seleccion",{usuarios,home:req.session.user, mi_session:true});
-       // res.send('Recibido')
+        res.render("partials/seleccion", { usuarios, home: req.session.user, mi_session: true });
+        // res.send('Recibido')
     }
 
     public endSession(req: Request, res: Response) {
