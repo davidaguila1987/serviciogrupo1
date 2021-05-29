@@ -23,7 +23,8 @@ class UserRoutes {
         this.router.post('/signin', userController.login);
         //registro
         this.router.get('/signup', userController.signup);
-        this.router.post('/signup', registerSchema, validationSingUp, userController.addUser);
+        //this.router.post('/signup', registerSchema, validationSingUp, userController.addUser);
+        this.router.post('/signup', userController.addUser);
         //Home del usuario
         /*  this.router.get('/home', (req: Request, res: Response) => {
              res.send('Bienvenido!!!')

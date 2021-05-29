@@ -24,41 +24,27 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const { usuario, password } = req.body; // hacemos detrucsturing y obtenemos el ID. Es decir, obtenemos una parte de un objeto JS.
             const result = yield userModel_1.default.buscarNombre(usuario);
-            console.log(usuario);
-            console.log(password);
-            console.log(result);
-            // const error = "Usuario o contraseña no valido";
             if (!result) {
                 return res.status(404).json({ message: "Usuario no registrado" });
-                //res.send({ "Usuario no registrado Recibido": req.body });
-                //res.redirect("errorLogin");
-                //res.render("partials/error");
                 //res.render("partials/signinForm", { error });
             }
             else {
                 if (result.nombre == usuario && result.password == password) {
                     req.session.user = result;
                     req.session.auth = true;
-                    //  res.redirect("./home"); 
                     const token = jsonwebtoken_1.default.sign({ _id: result.id }, "secretKey");
-                    res.status(200).json({ message: "Bienvenido " + result.nombre, token: token });
-                    return;
+                    return res.status(200).json({ message: "Bienvenido " + result.nombre, token: token });
                 }
             }
             res.status(403).json({ message: "Usuario y/o contraseña incorrectos" });
-            //res.send({ "Usuario y/o contraseña incorrectos": req.body });
-            //req.flash('error_session', 'Usuario y/o Password Incorrectos');
-            //res.redirect("./error");
         });
     }
     showError(req, res) {
-        // res.send({ "Usuario y/o contraseña incorrectos": req.body });
         res.render("partials/error");
     }
     //registro
     signup(req, res) {
         console.log(req.body);
-        //res.send('Sign Up!!!');
         res.render("partials/signupForm");
     }
     home(req, res) {
@@ -67,23 +53,15 @@ class UserController {
             res.redirect("./error");
         }
         console.log(req.body);
-        //  res.send('Bienvenido!!!');
         res.render("partials/home", { mi_session: true });
     }
-    /* public errorLogin(req: Request, res: Response) {
-         console.log(req.body);
-         //  res.send('Bienvenido!!!');
-         res.render("errors/errorLogin");
-     }*/
     //CRUD
     list(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(req.body);
-            console.log(req.header("Authotization")); //Observamos el valor del token
+            /*   console.log(req.body);
+              console.log(req.header("Authorization")); */ //Observamos el valor del token
             const usuarios = yield userModel_1.default.listar();
-            console.log(usuarios);
             return res.json(usuarios);
-            //res.send('Listado de usuarios!!!');
         });
     }
     find(req, res) {
@@ -101,9 +79,8 @@ class UserController {
             const usuario = req.body;
             delete usuario.repassword;
             console.log(req.body);
-            //return;
-            //res.send('Usuario agregado!!!');
             const busqueda = yield userModel_1.default.buscarNombre(usuario.nombre);
+            console.log("ACA TU BUSCQUEDA PAPA" + busqueda);
             if (!busqueda) {
                 const result = yield userModel_1.default.crear(usuario);
                 return res.status(200).json({ message: 'User saved!!' });
@@ -118,17 +95,14 @@ class UserController {
             console.log(req.body);
             const { id } = req.params;
             const result = yield userModel_1.default.actualizar(req.body, id);
-            //res.send('Usuario '+ req.params.id +' actualizado!!!');
             return res.json({ text: 'updating a user ' + id });
         });
     }
     delete(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log(req.body);
-            //res.send('Usuario '+ req.params.id +' Eliminado!!!');
             const { id } = req.params; // hacemos detrucsturing y obtenemos el ID. Es decir, obtenemos una parte de un objeto JS.
             const result = yield userModel_1.default.eliminar(id);
-            // return res.json({ text: 'deleting a user ' + id });
             res.redirect('../control');
         });
     }
@@ -136,13 +110,10 @@ class UserController {
     control(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.session.auth) {
-                //   res.redirect("/");
                 req.flash('error_session', 'Debes iniciar sesion para ver esta seccion');
                 res.redirect("./error");
             }
-            //res.send('Controles');
             const usuarios = yield userModel_1.default.listar();
-            //const users = usuarios;
             res.render('partials/controls', { users: usuarios, mi_session: true });
         });
     }
@@ -152,13 +123,9 @@ class UserController {
     procesar(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.session.auth) {
-                //  res.redirect("/");
                 req.flash('error_session', 'Debes iniciar sesion para ver esta seccion');
                 res.redirect("./error");
             }
-            //const usuarios = await userModel.listar();
-            // res.render('templates/auxiliar', { users: usuarios });
-            console.log(req.body);
             let usuario = req.body.usuario;
             var usuarios = [];
             console.log(usuario);
@@ -167,13 +134,11 @@ class UserController {
                     const encontrado = yield userModel_1.default.buscarId(elemento);
                     if (encontrado) {
                         usuarios.push(encontrado);
-                        //  console.log(encontrado);
                     }
                 }
             }
             console.log(usuarios);
             res.render("partials/seleccion", { usuarios, home: req.session.user, mi_session: true });
-            // res.send('Recibido')
         });
     }
     endSession(req, res) {

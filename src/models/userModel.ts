@@ -14,7 +14,7 @@ class UserModel {
 			password: 'e6432e3b',
 			database: 'heroku_110e4ea57743945',
 			connectionLimit: 10
-			/* host: 'localhost',
+		/* 	host: 'localhost',
 			user: 'root',
 			password: '',
 			database: 'pedidost1',

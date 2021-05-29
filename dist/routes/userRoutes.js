@@ -5,8 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const userController_1 = __importDefault(require("../controller/userController"));
-const validationSignUp_1 = require("../middleware/validationSignUp");
-const register_schema_1 = require("../schema/register-schema");
 const verifyToken_1 = require("../lib/verifyToken");
 class UserRoutes {
     constructor() {
@@ -27,7 +25,8 @@ class UserRoutes {
         this.router.post('/signin', userController_1.default.login);
         //registro
         this.router.get('/signup', userController_1.default.signup);
-        this.router.post('/signup', register_schema_1.registerSchema, validationSignUp_1.validationSingUp, userController_1.default.addUser);
+        //this.router.post('/signup', registerSchema, validationSingUp, userController.addUser);
+        this.router.post('/signup', userController_1.default.addUser);
         //Home del usuario
         /*  this.router.get('/home', (req: Request, res: Response) => {
              res.send('Bienvenido!!!')
